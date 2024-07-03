@@ -1,11 +1,16 @@
-FROM ubuntu:latest
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get upgrade -y
-RUN apt-get install jq git curl ca-certificates gnupg lsb-core -y
-RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg >/dev/null
-RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+RUN apt-get install jq git curl ca-certificates gnupg -y
+RUN apt install -y postgresql-common && /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -i -v 15
 RUN apt-get update
-RUN apt install telnet inetutils-ping nano vim wget curl htop nload tree traceroute tcptraceroute redis-tools netcat dnsutils postgresql-client-15 awscli mysql-client -y
+RUN apt install telnet inetutils-ping nano vim \
+    wget curl htop nload tree traceroute \
+    tcptraceroute redis-tools netcat dnsutils \
+    mysql-client unzip -y
 RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-RUN echo lol
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && ./aws/install
+
+# Squash the image
+
